@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
     {% if title %}
     <title>Interview - {{ title }}</title>
@@ -17,8 +18,10 @@
 
 <body>
     <form method="POST">
-        {{ question }} 
-        <br>
+        {{ question }} <div class="tooltip">Help
+            <span class="tooltiptext">{{ hint }}</span>
+          </div>
+          <br>
         {% if type=="bool" %}
             {% include "input_boolean.html" %}
         {% elif type=="str" %}

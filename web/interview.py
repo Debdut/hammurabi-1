@@ -19,8 +19,6 @@ goal = [(withholding.form_w4_complete, "Hub")]
 @app.route("/")
 def investigate_goal():
     web_session['factSet'] = []
-    # return render_template('main_interview.html')
-    # return Investigate([(form_w4_complete, "Hub", "Wife")])
     return web_apply_rules(goal)
    
 
@@ -95,13 +93,12 @@ def collect_input(attr):
     obj = attr[3]
     question = attr[4]
 
-    if(type == "bool"):
-        return render_template('main_interview.html', type=type, question=question)
-    if(type == "num"):
-        return render_template('main_interview.html', type=type, question=question)
-    if(type == "str"):
-        return render_template('main_interview.html', type=type, question=question)
+    if(attr[5] is None):
+        hint = ""
+    else:
+        hint = attr[5]
 
+    return render_template('main_interview.html', type=type, question=question, hint=hint)
     #for debugging
     return jsonify(attr)
 
