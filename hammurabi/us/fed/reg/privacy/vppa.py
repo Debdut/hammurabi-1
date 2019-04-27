@@ -21,26 +21,26 @@ def vppa_applies(data):
 
 # Sec. 2710(b)(1) - Non-disclosure requirement
 def violates_vppa_b1(data):
-    return And(dp.activities_include(data, ["Disclosure", "Publication", "Transfer"]),
-               content_includes(data, ["Address", "Authenticating information", "Customer purchase history",
-                                       "Date of birth", "Gender", "IP address", "Name", "Online identifier",
-                                       "Telephone number", "Location", "Unique identifier"]),
+    return And(dp.activity_is_any(data, ["Disclosure", "Publication", "Transfer"]),
+               dp.content_is_any(data, ["Address", "Authenticating information", "Customer purchase history",
+                                        "Date of birth", "Gender", "IP address", "Name", "Online identifier",
+                                        "Telephone number", "Location", "Unique identifier"]),
                Not(disclosure_exception_applies(data)))
 
 
 # Sec. 2710(b)(2) - Exceptions to non-disclosure requirement
 def disclosure_exception_applies(data):
-    return Or(subject_consent(data),    # (b)(2)(B)
+    return Or(dp.subject_consent(data),    # (b)(2)(B)
               # (b)(2)(C), (b)(3)
-              processing_purpose_includes(data, ["Criminal procedure", "Law enforcement", "Public security"]),
+              dp.processing_purpose_is_any(data, ["Criminal procedure", "Law enforcement", "Public security"]),
               # (b)(2)(D)
-              And(content_is_any(data, ["Name", "Address"]),
-                  Or(Not(content_is(data, "Customer purchase history")),
-                     processing_for(data, "Marketing"))),
+              And(dp.content_is_any(data, ["Name", "Address"]),
+                  Or(Not(dp.content_is(data, "Customer purchase history")),
+                     dp.processing_purpose_is(data, "Marketing"))),
               # (b)(2)(F)
-              processing_purpose_includes(data, ["Compliance with legal obligation", "Legal proceeding or claim"]))
+              dp.processing_purpose_is_any(data, ["Compliance with legal obligation", "Legal proceeding or claim"]))
 
 
 # Sec. 2710(e) - Destruction of old records
 def risk_of_violating_sec2710e(data):
-    return activity_is("Storage")
+    return dp.activity_is(data, "Storage")

@@ -1,6 +1,20 @@
-import hammurabi.hammurabi.shared.fam as fam
+import hammurabi.shared.fam as fam
 
 from akkadian import *
+
+
+# TAX YEAR
+
+
+# Individual tax determinations are always on the last day of the calendar year
+def assessment_date(p):
+    return Date(tax_year(p), 12, 31)
+
+
+# Tax year
+def tax_year(p):
+    return In("string", "us.fed.tax.indiv.shared.tax_year", p, None,
+              "What tax year does {0} want to know about?")
 
 
 # FILING STATUSES
@@ -37,7 +51,7 @@ def qualifying_widower(p):
 # Filing status input
 def tax_status(p):
     return In("str", "us.fed.tax.indiv.shared.tax_status", p, None,
-              question="What is {0}'s tax filing status?",
+              question="What is {0}'s " + ToScalar(tax_year(p)) + " tax filing status?",
               options=["Single", "Married filing jointly", "Married filing separately", "Head of household",
                        "Qualifying widow(er) with dependent child"])
 
@@ -48,4 +62,4 @@ def tax_status(p):
 # Itemizing deductions
 def itemizing(p):
     return In("bool", "us.fed.tax.indiv.shared.itemizing", p, None,
-              "Does {0} plan  to itemize or claim adjustments to income?")
+              "Does {0} plan to itemize or claim adjustments to income in " + ToScalar(tax_year(p)) + "?")

@@ -17,9 +17,3 @@ class Fact:
         self.subject = subject
         self.object = object
         self.value = value
-    
-    def __repr__(self):
-        return "Not yet defined."
-
-    def __str__(self):
-        return f"Fact -- Name: {self.name} Subject: {self.subject} Object: {self.object} Value: {self.value}"

@@ -5,7 +5,7 @@ from akkadian import *
 
 
 def spouse_of(p):
-    return _spouse_of(p)
+    return ToScalar(_spouse_of(p))
 
 
 # def is_married(p):

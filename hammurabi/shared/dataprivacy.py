@@ -15,11 +15,8 @@ subject_country_region = None
 recipient_country = None
 controller_industry = None
 processor_industry = None
-contents = None
 source = ["Data subject", "Public register", "Public domain", "Third party"]
-processing_purposes = None
 collection_purposes = None
-consents = None
 subject_age = None
 is_student = None
 anonymization_type = None
@@ -44,8 +41,34 @@ def industry_is(data):
     return "TODO"
 
 
-def activities_include(data, activities: list):
-    return IsIntersection(intended_activities(data), activities)
+# Is the intended activity the one specified?
+def activity_is(data, activity):
+    return IntersectionQ(intended_activities(data), [activity])
+
+
+# Do the intended activities include any of the listed items?
+def activity_is_any(data, activities: list):
+    return IntersectionQ(intended_activities(data), activities)
+
+
+# Is the content of the data the one specified?
+def content_is(data, content):
+    return IntersectionQ(contents(data), [content])
+
+
+# Does the data contain any of the listed contents?
+def content_is_any(data, content_list):
+    return IntersectionQ(contents(data), content_list)
+
+
+# Was the data processed for the specified reason?
+def processing_purpose_is(data, purpose):
+    return IntersectionQ(processing_purposes(data), [purpose])
+
+
+# Was the data processed for one of the listed reasons?
+def processing_purpose_is_any(data, purposes):
+    return IntersectionQ(processing_purposes(data), purposes)
 
 
 # HIGH-LEVEL RULE
@@ -107,6 +130,20 @@ def controller(data):
 def processor(data):
     return In("str", "shared.dataprivacy.data_processor", data, None, "Who is the data processor?")
 
+def contents(data):
+    return In("list", "shared.dataprivacy.contents", data, None,
+              question="What are the contents of the data?",
+              options=list_of_contents)
+
 def intended_activities(data):
     return In("list", "shared.dataprivacy.intended_activities", data, None,
               "What does the data controller intend to do with the data?")    # "data controller"?
+
+def processing_purposes(data):
+    return In("list", "shared.dataprivacy.processing_purposes", data, None,
+              question="For what purpose(s) is the data being processed?",
+              options=list_of_purposes)
+
+def subject_consent(data):
+    return In("bool", "shared.dataprivacy.subject_content", data, None,
+              "Did the data subject consent to the proposed use(s) of their data?")

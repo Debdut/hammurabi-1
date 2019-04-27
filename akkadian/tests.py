@@ -27,8 +27,52 @@ class TestDSL(unittest.TestCase):
 
     # AsOf
 
-    # def test_asof_1(self):
-    #     self.assertEqual(AsOf(TS({Dawn: "a", '2002-02-02': "c"}), Now), "c")
+    def test_asof_1(self):
+        self.assertEqual(AsOf(Now, TS({Dawn: "a", '2002-02-02': "c"})), "c")
+
+    def test_asof_2(self):
+        self.assertEqual(Pretty(AsOf(TS({Dawn: Dawn, '2002-02-02': '2010-02-02'}), TS({Dawn: "a", '2002-02-02': "c"}))),
+                         Pretty(TS({Dawn: "a", '2002-02-02': "c"})))
+
+    def test_asof_3(self):
+        self.assertEqual(Pretty(AsOf(TS({Dawn: Stub, '2002-02-02': '2010-02-02'}), TS({Dawn: "a", '2002-02-02': "c"}))),
+                         Pretty(TS({Dawn: Stub, '2002-02-02': "c"})))
+
+    def test_asof_4(self):
+        self.assertEqual(Pretty(AsOf(TS({Dawn: Null, '2002-02-02': '2010-02-02'}), TS({Dawn: "a", '2002-02-02': "c"}))),
+                         Pretty(TS({Dawn: Null, '2002-02-02': "c"})))
+
+    def test_asof_5(self):
+        self.assertEqual(Pretty(AsOf(TS({Dawn: Null, '2002-02-02': Stub}), TS({Dawn: "a", '2002-02-02': "c"}))),
+                         Pretty(TS({Dawn: Null, '2002-02-02': Stub})))
+
+    def test_asof_6(self):
+        self.assertEqual(Pretty(AsOf(TS({Dawn: Null, '2002-02-02': Null}), TS({Dawn: "a", '2002-02-02': "c"}))),
+                         Pretty(TS({Dawn: Null})))
+
+    def test_asof_7(self):
+        self.assertEqual(Pretty(AsOf(TS({Dawn: Null, '2002-02-02': Null}), TS({Dawn: "a", '2002-02-02': "c"}))),
+                         Pretty(Eternal(Null)))
+
+    def test_asof_8(self):
+        self.assertEqual(Pretty(AsOf(Null, TS({Dawn: "a", '2002-02-02': "c"}))),
+                         Pretty(Eternal(Null)))
+
+    def test_asof_9(self):
+        self.assertEqual(Pretty(AsOf(Now, TS({Dawn: "a", '2002-02-02': Stub}))),
+                         Pretty(Eternal(Stub)))
+
+    def test_asof_10(self):
+        self.assertEqual(Pretty(AsOf(Now, Stub)),
+                         Pretty(Eternal(Stub)))
+
+    def test_asof_11(self):
+        self.assertEqual(Pretty(AsOf(Null, Stub)),
+                         Pretty(Eternal(Stub)))
+
+    def test_asof_12(self):
+        self.assertEqual(Pretty(AsOf(Stub, Null)),
+                         Pretty(Eternal(Stub)))
 
     # Date conversions
 
@@ -1402,7 +1446,111 @@ class TestDSL(unittest.TestCase):
         self.assertEqual(ToScalar(TS({Dawn: 32, '2011-01-01': 44})), 32)
 
     def test_to_scalar_4(self):
-        self.assertEqual(ToScalar(TS({Dawn: 32, ToScalar(Now): 44})), 32)
+        self.assertEqual(ToScalar(TS({Dawn: 32, Now: 44})), 32)
+
+    # Intersection
+
+    def test_intersection_1(self):
+        self.assertEqual(Pretty(Intersection([4, 5, 6], [5, TS({Dawn: 9, '2002-02-02': 2})])),
+                         Pretty(Eternal([5])))
+
+    def test_intersection_2(self):
+        self.assertEqual(Pretty(Intersection([4, 5, 6], [5, 6, 7])),
+                         Pretty(Eternal([5, 6])))
+
+    def test_intersection_3(self):
+        self.assertEqual(Pretty(Intersection([4, 5, 6], [8, 2])),
+                         Pretty(Eternal([])))
+
+    def test_intersection_4(self):
+        self.assertEqual(Pretty(Intersection([4, 5, 6, 2], [5, TS({Dawn: 9, '2002-02-02': 2})])),
+                         Pretty(TS({Dawn: [5], '2002-02-02': [2, 5]})))
+
+    def test_intersection_5(self):
+        self.assertEqual(Pretty(Intersection(Null, [5, TS({Dawn: 9, '2002-02-02': 2})])),
+                         Pretty(Eternal(Null)))
+
+    def test_intersection_6(self):
+        self.assertEqual(Pretty(Intersection(Stub, [5, TS({Dawn: 9, '2002-02-02': 2})])),
+                         Pretty(Eternal(Stub)))
+
+    def test_intersection_7(self):
+        self.assertEqual(Pretty(Intersection([4, 5, 6, 2], [5, TS({Dawn: Stub, '2002-02-02': 2})])),
+                         Pretty(TS({Dawn: Stub, '2002-02-02': [2, 5]})))
+
+    def test_intersection_8(self):
+        self.assertEqual(Pretty(Intersection([4, 5, 6, 2], [5, TS({Dawn: 9, '2002-02-02': Stub})])),
+                         Pretty(TS({Dawn: [5], '2002-02-02': Stub})))
+
+    def test_intersection_9(self):
+        self.assertEqual(Pretty(Intersection([4, Stub, 6, 2], [5, TS({Dawn: 9, '2002-02-02': Stub})])),
+                         Pretty(Eternal(Stub)))
+
+    def test_intersection_10(self):
+        self.assertEqual(Pretty(Intersection(Null, Stub)),
+                         Pretty(Eternal(Stub)))
+
+    # Union
+
+    def test_union_1(self):
+        self.assertEqual(Pretty(Union([4, 5, 6], [5, 6, 7])),
+                         Pretty(Eternal([4, 5, 6, 7])))
+
+    # IsSubsetOf
+
+    def test_is_subset_of_1(self):
+        self.assertEqual(Pretty(IsSubsetOf([4, 5, 6], [5, 6, 7])),
+                         Pretty(Eternal(False)))
+
+    def test_is_subset_of_2(self):
+        self.assertEqual(Pretty(IsSubsetOf([4], [2, 6, 7])),
+                         Pretty(Eternal(False)))
+
+    def test_is_subset_of_3(self):
+        self.assertEqual(Pretty(IsSubsetOf([4], [4, 6, 7])),
+                         Pretty(Eternal(True)))
+
+    def test_is_subset_of_4(self):
+        self.assertEqual(Pretty(IsSubsetOf([4, 6, 7], [4])),
+                         Pretty(Eternal(False)))
+
+    # IsSubsetOf
+
+    def test_is_in_1(self):
+        self.assertEqual(Pretty(IsIn(5, [5, 6, 7])),
+                         Pretty(Eternal(True)))
+
+    def test_is_in_2(self):
+        self.assertEqual(Pretty(IsIn(2, [5, 6, 7])),
+                         Pretty(Eternal(False)))
+
+    def test_is_in_3(self):
+        self.assertEqual(Pretty(IsIn("Marcia", ["Sam", "Pat"])),
+                         Pretty(Eternal(False)))
+
+    def test_is_in_4(self):
+        self.assertEqual(Pretty(IsIn("Marcia", ["Sam", "Marcia", "Pat"])),
+                         Pretty(Eternal(True)))
+
+    # Complement
+
+    def test_complement_1(self):
+        self.assertEqual(Pretty(Complement([5, 6], [5, 6, 7])),
+                         Pretty(Eternal([])))
+
+    def test_complement_2(self):
+        self.assertEqual(Pretty(Complement([5, 6, 7], [5, 6])),
+                         Pretty(Eternal([7])))
+
+    # IntersectionQ
+
+    def test_intersectionQ_1(self):
+        self.assertEqual(Pretty(IntersectionQ([5, 6], [5, 6, 7])),
+                         Pretty(Eternal(True)))
+
+    def test_intersectionQ_2(self):
+        self.assertEqual(Pretty(IntersectionQ([10, 11], [5, 6, 7])),
+                         Pretty(Eternal(False)))
 
 
 # Used to test time series logic

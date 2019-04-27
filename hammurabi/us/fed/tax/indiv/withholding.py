@@ -1,5 +1,5 @@
-import hammurabi.hammurabi.shared.fam as fam
-import hammurabi.hammurabi.us.fed.tax.indiv.shared as tax
+import hammurabi.shared.fam as fam
+import hammurabi.us.fed.tax.indiv.shared as tax
 
 from akkadian import *
 
@@ -24,11 +24,11 @@ from akkadian import *
 # Source rules
 
 def form_w4_complete(p):
-    return And(pa_wksht_complete(p),
-               Or(Not(tax.itemizing(p)),
-                  daai_wksht_complete(p)),
-               Or(Not(temj_wksht_required(p)),
-                  temj_wksht_complete(p)))
+    return AsOf(tax.assessment_date(p), And(pa_wksht_complete(p),
+                                            Or(Not(tax.itemizing(p)),
+                                               daai_wksht_complete(p)),
+                                            Or(Not(temj_wksht_required(p)),
+                                               temj_wksht_complete(p))))
 
 
 # PERSONAL ALLOWANCES WORKSHEET
@@ -108,7 +108,7 @@ def pa_wksht_line_h(p):
            + Boole(tax.mfj(p)) \
            + Boole(tax.hoh(p)) \
            + Boole(only_job_or_low_wage_second(p)) \
-           + ctc_count(p) \
+           + Boole(ctc_count(p)) \
            + credit_for_other_deps(p) \
            + other_credits_pub505(p)
 
@@ -116,17 +116,18 @@ def pa_wksht_line_h(p):
 # Deductions, Adjustments, and Additional Income Worksheet
 
 
-# Note: Use this worksheet only if you plan to itemize deductions, claim certain adjustments to income, or have a large amount of nonwage
+# Note: Use this worksheet only if you plan to itemize deductions, claim certain adjustments to income, or have a large
+# amount of nonwage
 # income not subject to withholding.
 def daai_wksht_complete(p):
     return ded_adj_adtl_inc_line_10(p) >= 0
 
 
-# Enter an estimate of your 2019 itemized deductions. These include qualifying home mortgage interest,
+# Enter an estimate of your itemized deductions. These include qualifying home mortgage interest,
 # charitable contributions, state and local taxes (up to $10,000), and medical expenses in excess of 10% of
 # your income. See Pub. 505 for details . . . . . . . . . . . . . . . . . . . . . .
 def ded_adj_adtl_inc_line_1(p):
-    return itemized_deductions_2019(p)
+    return itemized_deductions(p)
 
 
 # 2 Enter: { $24,400 if you’re married filing jointly or qualifying widow(er)
@@ -145,10 +146,10 @@ def ded_adj_adtl_inc_line_3(p):
               False)
 
 
-# Enter an estimate of your 2019 adjustments to income, qualified business income deduction, and any
+# Enter an estimate of your adjustments to income, qualified business income deduction, and any
 # additional standard deduction for age or blindness (see Pub. 505 for information about these items) . .
 def ded_adj_adtl_inc_line_4(p):
-    return estimate_2019_adj_to_inc_qual_bus_inc_ded_addtl_std_ded(p)
+    return estimate_adj_to_inc_qual_bus_inc_ded_addtl_std_ded(p)
 
 
 # Add lines 3 and 4 and enter the total
@@ -156,9 +157,9 @@ def ded_adj_adtl_inc_line_5(p):
     return ded_adj_adtl_inc_line_3(p) + ded_adj_adtl_inc_line_4(p)
 
 
-# Enter an estimate of your 2019 nonwage income not subject to withholding (such as dividends or interest) .
+# Enter an estimate of your nonwage income not subject to withholding (such as dividends or interest) .
 def ded_adj_adtl_inc_line_6(p):
-    return estimate_2019_nonwage_inc_not_subj_to_withholding(p)
+    return estimate_nonwage_inc_not_subj_to_withholding(p)
 
 
 # Subtract line 6 from line 5. If zero, enter “-0-”. If less than zero, enter the amount in parentheses
@@ -278,9 +279,9 @@ def temj_wksht_line_8(p):
     return temj_wksht_line_6(p) * temj_wksht_line_7(p)
 
 
-# Divide line 8 by the number of pay periods remaining in 2019. For example, divide by 18 if you’re paid every
+# Divide line 8 by the number of pay periods remaining in the year. For example, divide by 18 if you’re paid every
 # 2 weeks and you complete this form on a date in late April when there are 18 pay periods remaining in
-# 2019. Enter the result here and on Form W-4, line 6, page 1. This is the additional amount to be withheld
+# the year. Enter the result here and on Form W-4, line 6, page 1. This is the additional amount to be withheld
 # from each paycheck
 def temj_wksht_line_9(p):
     return Trunc(temj_wksht_line_8(p) / pay_periods_remaining_in_year(p))
@@ -366,40 +367,46 @@ def joint_income(p, s):
     return total_income(p) + total_income(s)
 
 
+# TODO: Is this correct policywise?
+# wages from person's first job, wages from spouse's job
 def combined_couple_wages(p, s):
-    # wages from person's first job, wages from spouse's job
-    return If(fam.is_single(p), wages_from_second_job(p),
-              wages_from_second_job(p) + annual_wages(s))
+    return wages_from_second_job(p) + annual_wages(s)
 
 
 def has_only_one_job(p):
     return count_of_jobs(p) == 1
 
 
-############### base input rules ###############
-# base level attributes? Can we make these "fall out"?
+
+# For brevity; only available in this module
+def _year(p):
+    return ToScalar(tax.tax_year(p))
+
+
+# INPUTS
 
 
 def is_claiming_self(p):
-    return In("bool", "claim_self", p, None, "Does {0} intend to claim themself?")
+    return In("bool", "claim_self", p, None,
+              question="Does {0} intend to claim a deduction for him/herself in " + _year(p) + "?")
 
 
 def employment_status(p):
     return In("str", "employment_status", p, None, "What is {0}'s employment status?",
-              options= ["Employed", "Not employed"])
+              options=["Employed", "Not employed"])
 
 
 def wages_from_second_job(p):
     return In("num", "second_job_wages", p, None,
-              "What was the total sum of wages for {0} from their second job last year?")
+              "What was {0}'s total wages from his/her second job in " + _year(p) + "?")
 
 
 def annual_wages(p):
-    return In("num", "wages", p, None, "What was the total sum of wages for {0} last year?")
+    return In("num", "wages", p, None, "What was {0}'s total wages in " + _year(p) + "?")
 
 
 def count_of_jobs(p):
-    return In("num", "number_of_jobs", p, None, "How many jobs did {0} simultaneously hold last year?")
+    return In("num", "number_of_jobs", p, None, "How many jobs did {0} simultaneously hold in " + _year(p) + "?")
 
 
 def other_credits_pub505(p):
@@ -409,29 +416,31 @@ def other_credits_pub505(p):
 
 
 # temporal?
-def itemized_deductions_2019(p):
-    return In("num", "itemized_deductions_2019", p, None,
-              question="Please enter the an estimate of {0}'s 2019 itemized deductions. ",
+def itemized_deductions(p):
+    return In("num", "itemized_deductions", p, None,
+              question="Please enter an estimate of {0}'s itemized deductions for " + _year(p) + ".",
               help="These include qualifying home mortgage interest, "
               + "charitable contributions, state and local taxes (up to $10,000), and medical expenses in excess of "
               + "10% of your income. See Pub. 505 for details")
 
 
-def estimate_2019_adj_to_inc_qual_bus_inc_ded_addtl_std_ded(p):
-    return In("num", "itemized_deductions_2019", p, None,
-              question="Enter an estimate of {0}'s 2019 adjustments to income, "
-              + "qualified business income deduction, and any additional standard deduction for age or blindness.",
+def estimate_adj_to_inc_qual_bus_inc_ded_addtl_std_ded(p):
+    return In("num", "estimate_adj_to_inc_qual_bus_inc_ded_addtl_std_ded", p, None,
+              question="Enter an estimate of {0}'s adjustments to income, "
+              + "qualified business income deduction, and any additional standard deduction for age or blindness"
+                "for " + _year(p) + ".",
               help="See Pub. 505 for more information about these items.")
 
 
-def estimate_2019_nonwage_inc_not_subj_to_withholding(p):
-    return In("num", "itemized_deductions_2019", p, None,
-              question="Enter an estimate of {0}'s 2019 nonwage income not subject to withholding.",
+def estimate_nonwage_inc_not_subj_to_withholding(p):
+    return In("num", "estimate_nonwage_inc_not_subj_to_withholding", p, None,
+              question="Enter an estimate of {0}'s nonwage income not subject to withholding for " + _year(p) + ".",
               help="Dividends and interest are examples of such income.")
 
 
 def highest_earning_job_wages(p):
-    return In("num", "highest_earning_job_total_wages", p, None, "Enter the wages from {0}'s highest earning job.")
+    return In("num", "highest_earning_job_total_wages", p, None,
+              question="How much did {0} make in wages from his/her highest earning job in " + _year(p) + ".")
 
 
 # TODO: Ask about each person separately
