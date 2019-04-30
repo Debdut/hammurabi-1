@@ -35,6 +35,7 @@ def form_w4_complete(p):
 
 
 # can we make person/spouse global?
+# @explain("{0}'s Personal Allowance workshop is complete.")
 def pa_wksht_complete(p):
     # check complete if line h is known?
     return pa_wksht_line_h(p) >= 0

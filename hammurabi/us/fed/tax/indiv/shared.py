@@ -13,7 +13,7 @@ def assessment_date(p):
 
 # Tax year
 def tax_year(p):
-    return In("string", "us.fed.tax.indiv.shared.tax_year", p, None,
+    return In("str", "us.fed.tax.indiv.shared.tax_year", p, None,
               "What tax year does {0} want to know about?")
 
 

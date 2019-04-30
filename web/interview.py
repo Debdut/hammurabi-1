@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from flask import session as web_session
 from akkadian import *
-from ..hammurabi.us.fed.tax.indiv import withholding as withholding
+from hammurabi.us.fed.tax.indiv import withholding as withholding
 
 
 app = Flask(__name__)
@@ -112,3 +112,7 @@ def dict_to_facts(sessionObject):
         print(f)
         fs.append(Fact(f['name'], f['subject'], f['object'], f['value']))
     return fs
+
+
+if __name__ == '__main__':
+  app.run()
