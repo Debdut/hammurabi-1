@@ -16,11 +16,11 @@ The Hammurabi Project provides a vehicle for representing portions of the law in
 
 Hammurabi's purpose is to make law-related determinations - that is, to apply legal rules to a given factual situation and report the result. The repository is set up to accept law from any jurisdiction in the world, but with a practical focus on English-language legal materials and U.S. law specifically.
 
-U.S sources of legal rules include: the U.S. Code, Code of Federal Regulations, federal and state case law, state stautes and regulations, Executive Orders, and IRS publications, among other sources. Rules from one of these sources tend to reference those of other sources. Hammurabi weaves all of these sources together in a single, integrated knowledge base capable of deep legal analysis.
+U.S sources of legal rules include: the U.S. Code, Code of Federal Regulations, federal and state case law, state stautes and regulations, Executive Orders, and IRS publications, among other sources. Rules from one of these sources tend to reference those of other sources. Hammurabi weaves all of these sources together in a single, integrated knowledge base.
 
 ## Uses
 
-Hammurabi might someday be used as:
+Hammurabi could be used as:
 
 * The back end of a system that dynamically interviews users to help them answer basic legal questions.
 * The logic engine of a web service API that helps other computer systems process data about specific transactions.
@@ -31,7 +31,7 @@ Hammurabi might someday be used as:
 
 # Getting Involved
 
-This is obviously a very ambitious vision, one that will take years and many, many people to build and maintain. At present, we are laying the groundwork for that vision. We're looking for lawyers, programmers, testers, writers, and app developers to help us achieve it.
+This is obviously a very ambitious vision, one that will take years and many people to build and maintain. At present, we are laying the groundwork for that vision. We're looking for lawyers, programmers, testers, writers, and app developers to help us achieve it.
 
 ## How You Can Help
 
@@ -39,7 +39,6 @@ This is obviously a very ambitious vision, one that will take years and many, ma
 - Write a specification page for a new rule set
 - Create test cases 
 - Help build other components of the Hammurabi ecosystem
-- Donate
 - Spread the word 
 
 ## Current Project Focus
@@ -62,31 +61,4 @@ When specific rule sets become mature enough to be released to the public, we wi
 
 ## License
 
-The code in this repository is subject to a modified version of the MIT license. (The last paragraph was added to the standard MIT license.)
-
-> Copyright (c) 2011-2019 Foundation for Computable Law
-> 
-> Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-> 
-> The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-> 
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-> 
-> NO REPRESENTATION OR WARRANTY IS MADE THAT THIS PROGRAM ACCURATELY REFLECTS
-OR EMBODIES ANY APPLICABLE LAWS, REGULATIONS, RULES, OR EXECUTIVE ORDERS 
-("LAWS"). YOU SHOULD RELY ONLY ON OFFICIAL VERSIONS OF LAWS PUBLISHED BY THE 
-RELEVANT GOVERNMENT AUTHORITY, AND YOU ASSUME THE RESPONSIBILITY OF 
-INDEPENDENTLY VERIFYING SUCH LAWS. THE USE OF THIS PROGRAM IS NOT A 
-SUBSTITUTE FOR THE ADVICE OF AN ATTORNEY.
+The code in this repository is subject to a [modified version of the MIT license](https://github.com/foundation-for-computable-law/hammurabi/blob/master/hammurabi/license.txt). Please make sure that you understand its terms before using this software.
