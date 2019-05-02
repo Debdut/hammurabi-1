@@ -10,6 +10,7 @@ import hammurabi.us.shared.geo as geo
 # Applicability
 
 
+# 18 U.S.C. 2710
 # Assuming a broad territorial scope
 def vppa_applies(data):
     return And(EffectiveFrom('1988-11-05'),

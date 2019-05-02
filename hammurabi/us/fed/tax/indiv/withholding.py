@@ -22,7 +22,7 @@ from akkadian import *
 
 
 # Source rules
-
+@explain
 def form_w4_complete(p):
     return AsOf(tax.assessment_date(p), And(pa_wksht_complete(p),
                                             Or(Not(tax.itemizing(p)),
@@ -36,6 +36,7 @@ def form_w4_complete(p):
 
 # can we make person/spouse global?
 # @explain("{0}'s Personal Allowance workshop is complete.")
+@explain
 def pa_wksht_complete(p):
     # check complete if line h is known?
     return pa_wksht_line_h(p) >= 0
@@ -44,7 +45,8 @@ def pa_wksht_complete(p):
 # • You’re single, or married filing separately, and have only one job; or
 # •  You’re married filing jointly, have only one job, and your spouse doesn’t work; or
 # • Your wages from a second job or your spouse’s wages (or the total of both) are $1,500 or less
-# dev question, could we infer "only one job" as one active wages/employment record? Probably a question for policy team.
+# dev question, could we infer "only one job" as one active wages/employment record? Probably a question
+# for policy team.
 def only_job_or_low_wage_second(p):
     return Or(And(Or(fam.is_single(p),
                      tax.mfs(p)),
@@ -81,8 +83,10 @@ def ctc_w_o_spouse(p):
 
 
 # Credit for other dependents. See Pub. 972, Child Tax Credit, for more information.
-# • If your total income will be less than $71,201 ($103,351 if married filing jointly), enter “1” for each eligible dependent.
-# • If your total income will be from $71,201 to $179,050 ($103,351 to $345,850 if married filing jointly), enter “1” for every
+# • If your total income will be less than $71,201 ($103,351 if married filing jointly), enter “1” for each eligible
+# dependent.
+# • If your total income will be from $71,201 to $179,050 ($103,351 to $345,850 if married filing jointly), enter “1”
+# for every
 # two dependents (for example, “-0-” for one dependent, “1” if you have two or three dependents, and “2” if you have
 # four dependents).
 # • If your total income will be higher than $179,050 ($345,850 if married filing jointly), enter “-0-” . . . . . .
@@ -104,6 +108,7 @@ def credit_for_other_deps_w_o_spouse(p):
 
 
 # Total on line h
+@explain
 def pa_wksht_line_h(p):
     return Boole(is_claiming_self(p)) \
            + Boole(tax.mfj(p)) \
@@ -195,6 +200,7 @@ def ded_adj_adtl_inc_line_10(p):
 # or are married filing jointly and you and your spouse both work,
 # and the combined earnings from all jobs exceed $53,000 ($24,450 if married filing jointly), see the
 # Two-Earners/Multiple Jobs Worksheet on page 4 to avoid having too little tax withheld.
+@explain
 def temj_wksht_required(p):
     return Or(temj_wksht_required_single(p),
               temj_wksht_required_couple(p, fam.spouse_of(p)))
@@ -287,7 +293,7 @@ def temj_wksht_line_8(p):
 def temj_wksht_line_9(p):
     return Trunc(temj_wksht_line_8(p) / pay_periods_remaining_in_year(p))
 
-
+@explain
 def highest_earning_job_from_couple(p, s):
     return Max([highest_earning_job_wages(p), highest_earning_job_wages(s)])
 
