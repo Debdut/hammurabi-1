@@ -1,0 +1,12 @@
+<form method="POST">
+    <select name="answer">
+        {% for option in options %}
+        <option value="{{option}}">{{option}}</option>
+        {% endfor %}
+    </select>
+    {% for option in options %}
+        <h1>{{option}}</h1>
+    {% endfor %}
+    <br>
+    <input type="submit">
+</form>

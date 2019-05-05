@@ -55,9 +55,9 @@ def web_apply_rules(goals: list, fs=[]):
     if results["complete"]:
         return results["msg"]  # TODO
 
-    print("Fact Set in web_apply_rules:")
-    for f in fs:
-        print(f)
+    # print("Fact Set in web_apply_rules:")
+    # for f in fs:
+    #     print(f)
 
     # Otherwise, ask the next question...
     else:
@@ -78,13 +78,16 @@ def collect_input(attr):
     subject = attr[2]
     obj = attr[3]
     question = attr[4]
+    options = attr[5]
+
+    print(options)
 
     if(attr[5] is None):
         hint = ""
     else:
         hint = attr[5]
 
-    return render_template('main_interview.html', type=type, question=question, hint=hint)
+    return render_template('main_interview.html', type=type, question=question, hint=hint, options=options)
     #for debugging
     return jsonify(attr)
 

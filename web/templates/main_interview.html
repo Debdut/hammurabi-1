@@ -20,14 +20,18 @@
     <form method="POST">
         {{ question }} <div class="tooltip">Help
             <span class="tooltiptext">{{ hint }}</span>
-          </div>
-          <br>
+        </div>
+        <br>
         {% if type=="bool" %}
             {% include "input_boolean.html" %}
-        {% elif type=="str" %}
+        {% elif type=="str" and options is none %}
             {% include "input_str.html" %}
-        {% elif type=="num" %}
+        {% elif type=="str" and options is not none %}
+            {% include "input_str_options.html" %}
+        {% elif type=="num"  and options is none %}
             {% include "input_num.html" %}
+        {% elif type=="num" and options is not none %}
+            {% include "input_num_options.html" %}
         {% endif %}
         <br>
     </form>

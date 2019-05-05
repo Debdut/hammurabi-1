@@ -14,7 +14,7 @@ def assessment_date(p):
 # Tax year
 def tax_year(p):
     return In("str", "us.fed.tax.indiv.shared.tax_year", p, None,
-              "What tax year does {0} want to know about?")
+              "What tax year does {0} want to know about?", options=["2018", "2019"])
 
 
 # FILING STATUSES
